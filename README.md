@@ -13,7 +13,24 @@ NeoPathGen is a desktop tool for designing, previewing, and exporting camera pat
 | Vispy | 0.13+ |
 | NumPy | 1.23+ |
 | SciPy | 1.10+ |
-| trimesh | 4.0 + |
+| Trimesh | 4.0+ |
+
+Create Python virtual environment:
+
+```bash
+python3 -m venv ./.venv
+```
+
+Activate Python virtual environment:
+
+| Platform |   Shell    |             Command                   |
+| -------- | ---------- | ------------------------------------- |
+|  POSIX   | bash/zsh   | `$ source ./.venv/bin/activate`       |
+|          | fish       | `$ source ./.venv/bin/activate.fish`  |
+|          | csh/tcsh   | `$ source ./.venv/bin/activate.csh`   |
+|          | pwsh       | `$ ./.venv/bin/Activate.ps1`          |
+| Windows  | cmd.exe    | `C:\> <venv>\Scripts\activate.bat`    |
+|          | PowerShell | `PS C:\> <venv>\Scripts\Activate.ps1` |
 
 Install dependencies:
 

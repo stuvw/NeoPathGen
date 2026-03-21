@@ -173,7 +173,7 @@ class Stage1Panel(QWidget):
             spin.setDecimals(3)
             spin.setFixedWidth(82)
             slider = QSlider(Qt.Horizontal)
-            slider.setRange(-2000, 2000)   # ÷ 10 → −200 … +200
+            slider.setRange(-1000, 1000)   # ÷ 10 → −100 … -100
             hl.addWidget(lbl)
             hl.addWidget(spin)
             hl.addWidget(slider)
