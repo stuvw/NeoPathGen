@@ -15,24 +15,25 @@ NeoPathGen is a desktop tool for designing, previewing, and exporting camera pat
 | SciPy | 1.10+ |
 | Trimesh | 4.0+ |
 
-Create Python virtual environment:
+**Create a Python virtual environment:**
 
-```bash
-python3 -m venv ./.venv
-```
+|   Platform  |              Command           |
+| ----------- | ------------------------------ |
+| Linux/Macos | `$ python3 -m venv ./.venv`    |
+| Windows     | `C:\> python3 -m venv .\.venv` |
 
-Activate Python virtual environment:
+**Activate the Python virtual environment:**
 
-| Platform |   Shell    |             Command                   |
-| -------- | ---------- | ------------------------------------- |
-|  POSIX   | bash/zsh   | `$ source ./.venv/bin/activate`       |
-|          | fish       | `$ source ./.venv/bin/activate.fish`  |
-|          | csh/tcsh   | `$ source ./.venv/bin/activate.csh`   |
-|          | pwsh       | `$ ./.venv/bin/Activate.ps1`          |
-| Windows  | cmd.exe    | `C:\> <venv>\Scripts\activate.bat`    |
-|          | PowerShell | `PS C:\> <venv>\Scripts\Activate.ps1` |
+|    Platform    |   Shell    |             Command                    |
+| -------------- | ---------- | -------------------------------------- |
+|  Linux/Macos   | bash/zsh   | `$ source ./.venv/bin/activate`        |
+|                | fish       | `$ source ./.venv/bin/activate.fish`   |
+|                | csh/tcsh   | `$ source ./.venv/bin/activate.csh`    |
+|                | pwsh       | `$ ./.venv/bin/Activate.ps1`           |
+|    Windows     | cmd.exe    | `C:\> .\.venv\Scripts\activate.bat`    |
+|                | PowerShell | `PS C:\> .\.venv\Scripts\Activate.ps1` |
 
-Install dependencies:
+**Install dependencies:**
 
 ```bash
 pip install -r requirements.txt
@@ -67,8 +68,8 @@ Place and edit the control points that define your splines.
 **Adding points**
 
 - Click the **Add** button to insert a point offset from the last one, then adjust its position using the X / Y / Z spinboxes and sliders in the panel.
-- Toggle **PLACE POINT** in the toolbar to enter click-to-place mode, which snaps new points to the ground plane (Z = 0). Press **Escape** to exit.
-> WIP, is broken
+> - Toggle **PLACE POINT** in the toolbar to enter click-to-place mode, which snaps new points to the ground plane (Z = 0). Press **Escape** to exit. \
+> **Currently WIP, is broken**
 
 **Direction modes**
 

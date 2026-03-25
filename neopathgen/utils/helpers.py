@@ -3,16 +3,9 @@
 # ══════════════════════════════════════════════════════════════════════════════
 
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QLabel, QSplitter, QFrame, QToolBar, QStatusBar,
-    QSizePolicy, QGroupBox, QTabWidget, QListWidget, QListWidgetItem,
-    QDoubleSpinBox, QSpinBox, QComboBox, QCheckBox, QFileDialog,
-    QMessageBox, QAbstractItemView, QScrollArea, QSlider, QLineEdit,
-    QStackedWidget,
+    QPushButton, QFrame, QLabel, QWidget, 
+    QDoubleSpinBox, QHBoxLayout
 )
-from PyQt5.QtCore import Qt, QSize, pyqtSignal
-from PyQt5.QtGui import QFont, QColor, QFontDatabase
-
 from neopathgen.palette import *
 
 def empty_project():

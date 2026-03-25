@@ -3,35 +3,35 @@
 # ══════════════════════════════════════════════════════════════════════════════
 
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QLabel, QSplitter, QFrame, QToolBar, QStatusBar,
-    QSizePolicy, QGroupBox, QTabWidget, QListWidget, QListWidgetItem,
-    QDoubleSpinBox, QSpinBox, QComboBox, QCheckBox, QFileDialog,
-    QMessageBox, QAbstractItemView, QScrollArea, QSlider, QLineEdit,
-    QStackedWidget,
+    QWidget, QVBoxLayout, QHBoxLayout,
+    QLabel, QListWidget, QListWidgetItem,
+    QDoubleSpinBox, QComboBox, QCheckBox, 
+    QAbstractItemView, QScrollArea, QSlider,
+    QStackedWidget
 )
-from PyQt5.QtCore import Qt, QSize, pyqtSignal
-from PyQt5.QtGui import QFont, QColor, QFontDatabase
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QColor
 
-from neopathgen.palette import *
-from neopathgen.viewport import *
+from neopathgen.palette import C
 
-from neopathgen.utils.helpers import *
+from neopathgen.utils.helpers import sec_label, hdivider, btn, xyz_row
 
 class Stage1Panel(QWidget):
-    layer_changed          = pyqtSignal(str)
-    mode_changed           = pyqtSignal(str, str)
-    add_point_requested    = pyqtSignal()
-    delete_point_requested = pyqtSignal()
-    clear_all_requested    = pyqtSignal()
-    point_selected         = pyqtSignal(int)
-    point_x_changed        = pyqtSignal(int, float)
-    point_y_changed        = pyqtSignal(int, float)
-    point_z_changed        = pyqtSignal(int, float)
-    fixed_vector_changed   = pyqtSignal(str, float, float, float)
-    fixed_point_changed    = pyqtSignal(str, float, float, float)
-    mesh_load_requested    = pyqtSignal()
-    mesh_toggle            = pyqtSignal(bool)
+    layer_changed             = pyqtSignal(str)
+    mode_changed              = pyqtSignal(str, str)
+    add_point_requested       = pyqtSignal()
+    delete_point_requested    = pyqtSignal()
+    clear_all_requested       = pyqtSignal()
+    point_selected            = pyqtSignal(int)
+    point_x_changed           = pyqtSignal(int, float)
+    point_y_changed           = pyqtSignal(int, float)
+    point_z_changed           = pyqtSignal(int, float)
+    fixed_vector_changed      = pyqtSignal(str, float, float, float)
+    fixed_point_changed       = pyqtSignal(str, float, float, float)
+    mesh_load_requested       = pyqtSignal()
+    mesh_toggle               = pyqtSignal(bool)
+    pointcloud_load_requested = pyqtSignal()
+    pointcloud_toggle         = pyqtSignal(bool)
 
     def __init__(self, parent=None):
         super(Stage1Panel, self).__init__(parent)
@@ -209,6 +209,27 @@ class Stage1Panel(QWidget):
         bl.addWidget(self.lbl_mesh)
         bl.addStretch()
 
+        # ── Reference point cloud
+
+        bl.addWidget(sec_label("POINT CLOUD"))
+        bl.addWidget(hdivider())
+
+        pc_row = QWidget()
+        pl = QHBoxLayout(pc_row)
+        pl.setContentsMargins(0, 0, 0, 0); pl.setSpacing(4)
+        self.btn_load_pointcloud = btn("Load .bin", icon="▲")
+        self.btn_load_pointcloud.setFixedHeight(28)
+        self.chk_pointcloud = QCheckBox("Show")
+        self.chk_pointcloud.setChecked(True)
+        pl.addWidget(self.btn_load_pointcloud, 1)
+        pl.addWidget(self.chk_pointcloud)
+        bl.addWidget(pc_row)
+        self.lbl_pointcloud = QLabel("No point cloud loaded")
+        self.lbl_pointcloud.setStyleSheet(
+            "color: %s; font-size: 9px;" % C["text_muted"])
+        bl.addWidget(self.lbl_pointcloud)
+        
+
         # Wiring
         self.layer_combo.currentIndexChanged.connect(self._on_layer_changed)
         self.dir_mode_combo.currentIndexChanged.connect(self._on_dir_mode)
@@ -221,6 +242,8 @@ class Stage1Panel(QWidget):
         self._connect_coord_handlers()
         self.btn_load_mesh.clicked.connect(self.mesh_load_requested)
         self.chk_mesh.toggled.connect(self.mesh_toggle)
+        self.btn_load_pointcloud.clicked.connect(self.pointcloud_load_requested)
+        self.chk_pointcloud.toggled.connect(self.pointcloud_toggle)
 
         for sb in (self._dir_lx, self._dir_ly, self._dir_lz):
             sb.valueChanged.connect(self._emit_dir_lookat)
@@ -324,6 +347,9 @@ class Stage1Panel(QWidget):
 
     def set_mesh_label(self, name):
         self.lbl_mesh.setText(name)
+
+    def set_pointcloud_label(self, name):
+        self.lbl_pointcloud.setText(name)
 
     def load_from_project(self, proj):
         dir_map   = {"tangent": 0, "spline": 1, "look_at": 2, "fixed_vector": 3}

@@ -3,22 +3,15 @@
 # ══════════════════════════════════════════════════════════════════════════════
 
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QLabel, QSplitter, QFrame, QToolBar, QStatusBar,
-    QSizePolicy, QGroupBox, QTabWidget, QListWidget, QListWidgetItem,
-    QDoubleSpinBox, QSpinBox, QComboBox, QCheckBox, QFileDialog,
-    QMessageBox, QAbstractItemView, QScrollArea, QSlider, QLineEdit,
-    QStackedWidget,
+    QScrollArea, QSpinBox, QCheckBox, QVBoxLayout,
+    QWidget, QLabel, QHBoxLayout, QDoubleSpinBox
 )
-from PyQt5.QtCore import Qt, QSize, pyqtSignal
-from PyQt5.QtGui import QFont, QColor, QFontDatabase
+from PyQt5.QtCore import Qt, pyqtSignal
 
 
-from neopathgen.palette import *
-from neopathgen.viewport import *
+from neopathgen.palette import C
 
-from neopathgen.utils.helpers import *
-from neopathgen.utils.spline import *
+from neopathgen.utils.helpers import hdivider, sec_label, btn
 
 class Stage2Panel(QWidget):
     """

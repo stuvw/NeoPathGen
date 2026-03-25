@@ -5,22 +5,18 @@
 import numpy as np
 
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QLabel, QSplitter, QFrame, QToolBar, QStatusBar,
-    QSizePolicy, QGroupBox, QTabWidget, QListWidget, QListWidgetItem,
-    QDoubleSpinBox, QSpinBox, QComboBox, QCheckBox, QFileDialog,
-    QMessageBox, QAbstractItemView, QScrollArea, QSlider, QLineEdit,
-    QStackedWidget, QTableWidget, QTableWidgetItem, QHeaderView
+    QWidget, QSizePolicy, QTableWidget, 
+    QHeaderView, QCheckBox, QTableWidgetItem, 
+    QHBoxLayout, QVBoxLayout, QScrollArea, QLabel
 )
-from PyQt5.QtCore import Qt, QSize, pyqtSignal, QPointF, QRectF
-from PyQt5.QtGui import QFont, QColor, QFontDatabase, QPainter, QPen, QBrush, QPainterPath, QPolygonF
+from PyQt5.QtCore import Qt, pyqtSignal, QPointF
+from PyQt5.QtGui import  QColor, QPainter, QPen, QBrush, QPainterPath
 
 
-from neopathgen.palette import *
+from neopathgen.palette import C
 
-from neopathgen.utils.helpers import *
-from neopathgen.utils.speed_profile import *
-from neopathgen.utils.spline import *
+from neopathgen.utils.helpers import sec_label, hdivider, btn
+from neopathgen.utils.speed_profile import eval_speed_curve
 
 class SpeedCurveWidget(QWidget):
     """

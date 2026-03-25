@@ -5,23 +5,14 @@
 import numpy as np
 import trimesh
 
-from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QLabel, QSplitter, QFrame, QToolBar, QStatusBar,
-    QSizePolicy, QGroupBox, QTabWidget, QListWidget, QListWidgetItem,
-    QDoubleSpinBox, QSpinBox, QComboBox, QCheckBox, QFileDialog,
-    QMessageBox, QAbstractItemView, QScrollArea, QSlider, QLineEdit,
-    QStackedWidget,
-)
-from PyQt5.QtCore import Qt, QSize, pyqtSignal
-from PyQt5.QtGui import QFont, QColor, QFontDatabase
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QSizePolicy
 
-import vispy.scene
+from PyQt5.QtCore import Qt, pyqtSignal
+
 from vispy.scene import SceneCanvas, visuals
 from vispy.scene.cameras import TurntableCamera
-from vispy import app as vispy_app
 
-from neopathgen.palette import *
+from neopathgen.palette import LAYER_COLOR, LAYER_SPLINE_COLOR
 
 def _grid_lines(extent=20, step=1):
     lines = []
@@ -96,6 +87,12 @@ class Viewport3D(QWidget):
             self._sel_vis[layer] = sel
 
         self._mesh_vis = None
+
+        # Point cloud visuals
+        self._pointcloud_vis = visuals.Markers(parent=self.scene)
+        self._pointcloud_vis.set_data(
+            np.zeros((1, 3), dtype=np.float32),
+            face_color=(1, 1, 1, 0.0), size=1)
 
         # Vector field visuals (direction & north arrows)
         # Each is a Line with connect="segments": pairs (tail, head)
@@ -224,6 +221,49 @@ class Viewport3D(QWidget):
             self._mesh_vis.visible = v
             self.canvas.update()
 
+    def load_pointcloud(self, path):
+        raw = np.fromfile(path, dtype=np.float32)
+        N = raw.size // 4
+        x, y, z, val = np.split(raw[:N * 4], 4)
+        xyz = np.column_stack([x, y, z])
+        t = (val - val.min()) / (val.max() - val.min() + 1e-12)
+        return xyz.astype(np.float32), t.astype(np.float32)
+
+    def set_pointcloud(self, xyz, t):
+
+        # HERE
+
+        """
+        xyz : (N, 3) float32 — world-space positions
+        t   : (N,)  float32 — values normalised to [0, 1] for colouring
+        """
+        if xyz is None or len(xyz) == 0:
+            self._pointcloud_vis.set_data(
+                np.zeros((1, 3), dtype=np.float32),
+                face_color=(1, 1, 1, 0.0), size=1)
+            self.canvas.update()
+            return
+
+        # Map t → colour using a blue→white heat ramp
+        # t=0: deep blue, t=1: white
+        r = t
+        g = t
+        b = np.ones_like(t)
+        a = np.full_like(t, 0.6)
+        colors = np.column_stack([r, g, b, a]).astype(np.float32)
+
+        # Subsample if very large
+        stride = max(1, len(xyz) // 500_000)
+        self._pointcloud_vis.set_data(
+            xyz[::stride].astype(np.float32),
+            face_color=colors[::stride],
+            size=2, edge_width=0)
+        self.canvas.update()
+
+    def set_pointcloud_visible(self, v):
+        self._pointcloud_vis.visible = v
+        self.canvas.update()
+
     def set_vector_field(self, layer, path_pts, vec=None, stride=20, scale=0.5):
         """
         Draw evenly-spaced arrows along path_pts pointing in direction vec.
@@ -262,20 +302,40 @@ class Viewport3D(QWidget):
             self._vec_vis[layer].visible = v
             self.canvas.update()
 
-    def set_retimed_path(self, pts):
+    def set_retimed_path(self, pts, u_samples):
         """
-        Show the re-timed path as a dot cloud so sample density is visible.
+        Show the re-timed path as a colored dot cloud so sample density is visible.
         pts: (N, 3) ndarray or None to clear.
         """
+
+
         if pts is None or len(pts) == 0:
             self._rt_vis.set_data(np.zeros((1, 3), dtype=np.float32),
                                   face_color=(1, 1, 1, 0.0), size=1)
         else:
             # Subsample for performance if very dense
             stride = max(1, len(pts) // 2000)
-            sub = pts[::stride].astype(np.float32)
-            self._rt_vis.set_data(sub,
-                                  face_color=(1.0, 0.85, 0.2, 0.7),
+            sub_p = pts[::stride].astype(np.float32)
+            sub_u = u_samples[::stride].astype(np.float32)
+
+            sub_u = np.diff(sub_u)
+            sub_u = np.pad(sub_u, (0, 1), mode='edge')
+
+            u_min = sub_u.min()
+            u_max = sub_u.max()
+
+            denom = u_max - u_min if u_max != u_min else 1.0
+            t = (sub_u - u_min) / denom
+
+            r = np.ones_like(t)
+            g = 1.0 - t
+            b = np.zeros_like(t)
+            a = np.ones_like(t)
+        
+            colors = np.column_stack([r, g, b, a]).astype(np.float32)
+
+            self._rt_vis.set_data(sub_p,
+                                  face_color=colors,
                                   size=4, edge_width=0)
         self.canvas.update()
 

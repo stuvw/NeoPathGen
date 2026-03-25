@@ -9,35 +9,31 @@ from pathlib import Path
 import numpy as np
 
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QLabel, QSplitter, QFrame, QToolBar, QStatusBar,
-    QSizePolicy, QGroupBox, QTabWidget, QListWidget, QListWidgetItem,
-    QDoubleSpinBox, QSpinBox, QComboBox, QCheckBox, QFileDialog,
-    QMessageBox, QAbstractItemView, QScrollArea, QSlider, QLineEdit,
-    QStackedWidget, QTableWidget, QTableWidgetItem, QHeaderView
+    QToolBar, QPushButton, QWidget,
+    QFrame, QMainWindow, QSizePolicy,
+    QStackedWidget, QSplitter, QTabWidget,
+    QVBoxLayout, QStatusBar, QMessageBox,
+    QFileDialog, QApplication
 )
-from PyQt5.QtCore import Qt, QSize, pyqtSignal, QPointF, QRectF
-from PyQt5.QtGui import QFont, QColor, QFontDatabase, QPainter, QPen, QBrush, QPainterPath, QPolygonF
+from PyQt5.QtCore import Qt
 
-import vispy.scene
-from vispy.scene import SceneCanvas, visuals
-from vispy.scene.cameras import TurntableCamera
 from vispy import app as vispy_app
 
-from scipy.interpolate import splprep, splev
+from neopathgen.palette import C, SS
+from neopathgen.viewport import Viewport3D
 
-from neopathgen.palette import *
-from neopathgen.viewport import *
+from neopathgen.stages.stage_1 import Stage1Panel
+from neopathgen.stages.stage_2 import Stage2Panel
+from neopathgen.stages.stage_3 import Stage3Panel, SpeedCurveWidget
+from neopathgen.stages.stage_4 import Stage4Panel
 
-from neopathgen.stages.stage_1 import *
-from neopathgen.stages.stage_2 import *
-from neopathgen.stages.stage_3 import *
-from neopathgen.stages.stage_4 import *
-
-from neopathgen.utils.helpers import *
-from neopathgen.utils.speed_profile import *
-from neopathgen.utils.spline import *
-from neopathgen.utils.stereo import *
+from neopathgen.utils.helpers import empty_project
+from neopathgen.utils.speed_profile import apply_speed_profile
+from neopathgen.utils.spline import (
+    compute_spline, compute_direction_vectors,
+    compute_north_vectors, build_export_lines
+)
+from neopathgen.utils.stereo import compute_stereo_offset
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Top toolbar
@@ -229,6 +225,8 @@ class MainWindow(QMainWindow):
         p.fixed_point_changed.connect(self._on_fixed_point_changed)
         p.mesh_load_requested.connect(self._load_mesh)
         p.mesh_toggle.connect(self.viewport.set_mesh_visible)
+        p.pointcloud_load_requested.connect(self._load_pointcloud)
+        p.pointcloud_toggle.connect(self.viewport.set_pointcloud_visible)
         self.viewport.point_placed.connect(self._on_point_placed)
 
     def _wire_stage2(self):
@@ -264,6 +262,7 @@ class MainWindow(QMainWindow):
         self._mark_dirty()
 
     def _apply_speed_profile(self):
+
         if self._spline_path is None:
             QMessageBox.warning(self, "Not ready",
                 "Generate splines in Stage 2 first.")
@@ -294,7 +293,7 @@ class MainWindow(QMainWindow):
         if targets["north"]:     active.append("north")
         target_str = " + ".join(active)
 
-        self.viewport.set_retimed_path(self._rt_path)
+        self.viewport.set_retimed_path(self._rt_path, u_samp)
         self.panel_s3.set_apply_status(
             True, "✓  Applied to: %s  ·  %d segs  ·  %d samples"
             % (target_str, len(prof), res))
@@ -432,6 +431,8 @@ class MainWindow(QMainWindow):
             self.panel_s3.load_from_project(self._project)
             self.panel_s4.load_from_project(self._project)
             self._curve_widget.update_curve(self._project.get("speed_profile", []))
+            self._load_pointcloud(open_project=True)
+            self._load_mesh(open_project=True)
             self.status.showMessage("Opened %s" % path, 4000)
         except Exception as e:
             QMessageBox.critical(self, "Error", "Could not open file:\n%s" % e)
@@ -534,6 +535,7 @@ class MainWindow(QMainWindow):
         layer = self._active_layer()
         pts   = self._project[layer]["points"]
         self.viewport.set_selected_point(layer, idx, pts)
+        self.panel_s1.refresh_point_list(layer, pts, idx)
 
     def _on_point_x_changed(self, idx, x):
         layer = self._active_layer()
@@ -543,6 +545,7 @@ class MainWindow(QMainWindow):
             self._mark_dirty()
             self._refresh_layer(layer)
             self.panel_s1.refresh_point_list(layer, pts, idx)
+            self.viewport.set_selected_point(layer, idx, pts)
 
     def _on_point_y_changed(self, idx, y):
         layer = self._active_layer()
@@ -552,6 +555,7 @@ class MainWindow(QMainWindow):
             self._mark_dirty()
             self._refresh_layer(layer)
             self.panel_s1.refresh_point_list(layer, pts, idx)
+            self.viewport.set_selected_point(layer, idx, pts)
 
     def _on_point_z_changed(self, idx, z):
         layer = self._active_layer()
@@ -561,6 +565,7 @@ class MainWindow(QMainWindow):
             self._mark_dirty()
             self._refresh_layer(layer)
             self.panel_s1.refresh_point_list(layer, pts, idx)
+            self.viewport.set_selected_point(layer, idx, pts)
 
     # ── Spline generation & export
 
@@ -674,19 +679,53 @@ class MainWindow(QMainWindow):
 
     # ── Mesh
 
-    def _load_mesh(self):
-        path, _ = QFileDialog.getOpenFileName(
-            self, "Load Reference Mesh", "", "Mesh files (*.obj *.ply *.stl)")
-        if not path: return
+    def _load_mesh(self, open_project=False):
+        if not open_project:
+            path, _ = QFileDialog.getOpenFileName(
+                self, "Load Reference Mesh", "", "Mesh files (*.obj *.ply *.stl)")
+            if not path:
+                return
+            self._project["mesh_path"] = path
+        else:
+            path = self._project["mesh_path"]
+            if not path:
+                return
+
         result = self.viewport.load_mesh(path)
         if result is True:
             name = Path(path).name
             self.panel_s1.set_mesh_label(name)
-            self._project["mesh_path"] = path
+            
             self.status.showMessage("Mesh loaded: %s" % name, 3000)
         else:
             QMessageBox.critical(self, "Mesh Error",
                 "Could not load mesh (is trimesh installed?):\n%s" % result)
+
+    # ── Mesh
+
+    def _load_pointcloud(self, open_project=False):
+
+        if not open_project:
+            path, _ = QFileDialog.getOpenFileName(
+                self, "Load Point Cloud", "", "Binary point cloud (*.bin)")
+            if not path:
+                return
+            self._project["pointcloud_path"] = path
+        else:
+            path = self._project["pointcloud_path"]
+            if not path:
+                return
+        try:
+            xyz, t = self.viewport.load_pointcloud(path)
+            self.viewport.set_pointcloud(xyz, t)
+            name = Path(path).name
+            self.panel_s1.set_pointcloud_label(
+                "%s  (%s pts)" % (name, f"{len(xyz):,}"))
+            self.status.showMessage(
+                "Point cloud loaded: %s — %s points" % (name, f"{len(xyz):,}"), 4000)
+        except Exception as e:
+            QMessageBox.critical(self, "Point Cloud Error",
+                "Could not load point cloud:\n%s" % e)
 
     # ── Tab gating
 
@@ -696,6 +735,13 @@ class MainWindow(QMainWindow):
 
         # Swap right panel: curve editor on Speed tab, viewport everywhere else
         self._right_stack.setCurrentIndex(1 if idx == self.TAB_SPEED else 0)
+
+        if idx == self.TAB_PLACE:
+            # Re-assert selection ring in case it was cleared by another tab
+            layer = self._active_layer()
+            pts   = self._project[layer]["points"]
+            row   = self.panel_s1.point_list.currentRow()
+            self.viewport.set_selected_point(layer, row, pts)
 
         if idx == self.TAB_SPLINE:
             self.panel_s2.refresh_layer_info(self._project)
@@ -744,7 +790,7 @@ class MainWindow(QMainWindow):
         self._stereo_left_north = self._stereo_right_north = None
         self.viewport.set_vector_field("direction", None)
         self.viewport.set_vector_field("north", None)
-        self.viewport.set_retimed_path(None)
+        self.viewport.set_retimed_path(None, None)
         self.viewport.set_stereo_path("left",  None)
         self.viewport.set_stereo_path("right", None)
         self.panel_s2.set_generate_status(False, "No spline generated")
