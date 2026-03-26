@@ -216,9 +216,54 @@ Spline samples and computed vectors are not saved — they are recomputed on dem
 
 ## Keyboard Shortcuts
 
+### General
+
 | Key | Action |
 |-----|--------|
-| Escape | Exit place-point mode |
+| Ctrl + S | Save project |
+| Ctrl + O | Open project file |
+| Ctrl + N | Start new project |
+
+### Tab navigation
+
+| Key | Action |
+|-----|--------|
+| 1 | Switch to tab 1 ( point placing ) |
+| 2 | Switch to tab 2 ( spline generation ) |
+| 3 | Switch to tab 3 ( speed profile ) |
+| 4 | Switch to tab 4 ( stereo offset ) |
+
+### Stage 1 tab
+
+| Key | Action |
+|-----|--------|
+| A | place a point |
+| D / Backspace / Delete | delete selected point |
+| Ctrl + Tab | cycle between editing modes (path/direction/north) |
+
+### Stage 2 tab
+
+| Key | Action |
+|-----|--------|
+| G | generate splines |
+| E | export path |
+
+### Stage 3 tab
+
+| Key | Action |
+|-----|--------|
+| A | add speed segment |
+| D / Delete / Backspace | delete selected speed segment |
+| Return / Enter | apply speed profile to splines |
+| E | export retimed path |
+
+### Stage 4 tab
+
+| Key | Action |
+|-----|--------|
+| G | generate stereo offset |
+| E | export left/right paths |
+
 
 ---
 
@@ -228,3 +273,8 @@ Spline samples and computed vectors are not saved — they are recomputed on dem
 - Consecutive duplicate control points are silently removed before fitting to prevent `splprep` from failing.
 - North vectors are independent of direction vectors — no Gram-Schmidt orthogonalisation is applied at export. If your renderer requires orthonormal camera frames, apply the orthogonalisation on the renderer side.
 - The stereo rig is parallel (no toe-in). Toe-in is generally discouraged for large screens and VR due to vertical disparity artefacts at the image edges.
+
+## Issues / Improvements
+
+- This project was mostly vibe-coded, so **there will inevitably be bugs**. In case you find one, please submit an [issue](https://github.com/stuvw/NeoPathGen/issues), while detailing as much as possible. Or even better, create a [pull request](https://github.com/stuvw/NeoPathGen/pulls) with the fix !
+- If you have any improvement ideas, don't hesitate to create a pull request/submit an issue like detailed above.

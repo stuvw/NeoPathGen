@@ -71,7 +71,7 @@ class SpeedCurveWidget(QWidget):
             if pad_t <= y <= pad_t + ph:
                 p.drawLine(pad_l, y, pad_l + pw, y)
                 p.setPen(QPen(QColor(C["text_muted"])))
-                p.drawText(2, y + 4, "%g" % mv)
+                p.drawText(2, y + 4, f"{mv:g}")
                 p.setPen(pen_grid)
             mv += tick
 
@@ -166,7 +166,7 @@ class Stage3Panel(QWidget):
         title.setObjectName("AppTitle")
         bl.addWidget(title)
         sub = QLabel("speed profile")
-        sub.setStyleSheet("color: %s; font-size: 9px; letter-spacing: 2px;" % C["text_muted"])
+        sub.setStyleSheet(f"color: {C["text_muted"]}; font-size: 9px; letter-spacing: 2px;")
         bl.addWidget(sub)
         bl.addSpacing(10)
 
@@ -175,7 +175,7 @@ class Stage3Panel(QWidget):
             "Define speed multipliers over the path parameter u ∈ [0,1].\n"
             "Gaps between segments are smoothly bridged.\n"
             "Speed = 1.0 is normal, 2.0 = twice as fast, 0.5 = half speed.")
-        info.setStyleSheet("color: %s; font-size: 10px;" % C["text_dim"])
+        info.setStyleSheet(f"color: {C["text_dim"]}; font-size: 10px;")
         info.setWordWrap(True)
         bl.addWidget(info)
         bl.addSpacing(8)
@@ -188,14 +188,14 @@ class Stage3Panel(QWidget):
         self.table.setHorizontalHeaderLabels(["Start", "End", "Speed"])
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.table.horizontalHeader().setStyleSheet(
-            "QHeaderView::section { background: %s; color: %s; "
-            "font-size: 9px; letter-spacing: 1px; border: none; "
-            "border-bottom: 1px solid %s; padding: 4px; }"
-            % (C["surface2"], C["text_muted"], C["panel_border"]))
+            f"QHeaderView::section {{ background: {C["surface2"]}; color: {C["text_muted"]}; "
+            f"font-size: 9px; letter-spacing: 1px; border: none; "
+            f"border-bottom: 1px solid {C["panel_border"]}; padding: 4px; }}"
+            )
         self.table.verticalHeader().setVisible(False)
         self.table.setFixedHeight(160)
         self.table.setStyleSheet(
-            "QTableWidget { gridline-color: %s; }" % C["panel_border"])
+            f"QTableWidget {{ gridline-color: {C["panel_border"]}; }}")
         bl.addWidget(self.table)
 
         btn_row = QWidget()
@@ -222,11 +222,11 @@ class Stage3Panel(QWidget):
         # Path is mandatory — disabling would make no sense
         self.chk_retime_path.setEnabled(False)
         self.chk_retime_path.setStyleSheet(
-            "color: %s;" % C["col_path"])
+            f"color: {C["col_path"]};")
         self.chk_retime_dir.setStyleSheet(
-            "color: %s;" % C["col_direction"])
+            f"color: {C["col_direction"]};")
         self.chk_retime_north.setStyleSheet(
-            "color: %s;" % C["col_north"])
+            f"color: {C["col_north"]};")
         for chk in (self.chk_retime_path, self.chk_retime_dir,
                     self.chk_retime_north):
             bl.addWidget(chk)
@@ -237,7 +237,7 @@ class Stage3Panel(QWidget):
         bl.addWidget(self.btn_apply)
 
         self.lbl_status = QLabel("No profile applied yet.")
-        self.lbl_status.setStyleSheet("color: %s; font-size: 10px;" % C["text_muted"])
+        self.lbl_status.setStyleSheet(f"color: {C["text_muted"]}; font-size: 10px;")
         self.lbl_status.setWordWrap(True)
         bl.addWidget(self.lbl_status)
         bl.addSpacing(8)
@@ -252,7 +252,7 @@ class Stage3Panel(QWidget):
         bl.addWidget(self.btn_export)
 
         self.lbl_export = QLabel("Apply profile first.")
-        self.lbl_export.setStyleSheet("color: %s; font-size: 10px;" % C["text_muted"])
+        self.lbl_export.setStyleSheet(f"color: {C["text_muted"]}; font-size: 10px;")
         self.lbl_export.setWordWrap(True)
         bl.addWidget(self.lbl_export)
         bl.addSpacing(8)
@@ -290,7 +290,7 @@ class Stage3Panel(QWidget):
         self.table.blockSignals(True)
         self.table.insertRow(row)
         for col, val in enumerate([start, end, speed]):
-            item = QTableWidgetItem("%.3f" % val)
+            item = QTableWidgetItem(f"{val:.3f}")
             item.setTextAlignment(Qt.AlignCenter)
             self.table.setItem(row, col, item)
         self.table.blockSignals(False)
@@ -357,19 +357,19 @@ class Stage3Panel(QWidget):
 
     def set_apply_status(self, ok, message):
         color = C["success"] if ok else C["danger"]
-        self.lbl_status.setStyleSheet("color: %s; font-size: 10px;" % color)
+        self.lbl_status.setStyleSheet(f"color: {color}; font-size: 10px;")
         self.lbl_status.setText(message)
         self.btn_export.setEnabled(ok)
         if ok:
             self.lbl_export.setText("Ready to export.")
-            self.lbl_export.setStyleSheet("color: %s; font-size: 10px;" % C["text_dim"])
+            self.lbl_export.setStyleSheet(f"color: {C["text_dim"]}; font-size: 10px;")
         else:
             self.lbl_export.setText("Apply profile first.")
-            self.lbl_export.setStyleSheet("color: %s; font-size: 10px;" % C["text_muted"])
+            self.lbl_export.setStyleSheet(f"color: {C["text_muted"]}; font-size: 10px;")
 
     def set_export_status(self, message):
         self.lbl_export.setText(message)
-        self.lbl_export.setStyleSheet("color: %s; font-size: 10px;" % C["success"])
+        self.lbl_export.setStyleSheet(f"color: {C["success"]}; font-size: 10px;")
 
     def load_from_project(self, proj):
         """Populate the table from a loaded project dict."""

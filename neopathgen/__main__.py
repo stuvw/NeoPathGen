@@ -46,7 +46,7 @@ class TopToolbar(QToolBar):
         self.setFloatable(False)
 
         def tb(label, icon="", checkable=False):
-            b = QPushButton(("%s  %s" % (icon, label)) if icon else label)
+            b = QPushButton((f"{icon}  {label}") if icon else label)
             b.setProperty("style", "toolbtn")
             b.setCheckable(checkable)
             b.setFixedHeight(30)
@@ -78,7 +78,7 @@ class TopToolbar(QToolBar):
 
     def _sep(self):
         f = QFrame(); f.setFrameShape(QFrame.VLine)
-        f.setStyleSheet("color: %s; margin: 4px 4px;" % C["panel_border"])
+        f.setStyleSheet(f"color: {C["panel_border"]}; margin: 4px 4px;")
         self.addWidget(f)
 
 
@@ -277,7 +277,7 @@ class MainWindow(QMainWindow):
                 self._spline_path, self._spline_dir, self._spline_north,
                 prof, res)
         except Exception as e:
-            self.panel_s3.set_apply_status(False, "Error: %s" % e)
+            self.panel_s3.set_apply_status(False, f"Error: {e}")
             return
 
         # Apply selectively: arrays whose checkbox is off keep the
@@ -295,8 +295,8 @@ class MainWindow(QMainWindow):
 
         self.viewport.set_retimed_path(self._rt_path, u_samp)
         self.panel_s3.set_apply_status(
-            True, "✓  Applied to: %s  ·  %d segs  ·  %d samples"
-            % (target_str, len(prof), res))
+            True, f"✓  Applied to: {target_str}  ·  {len(prof)} segs  ·  {res} samples"
+            )
         self._mark_dirty()
 
     def _export_retimed(self):
@@ -316,8 +316,8 @@ class MainWindow(QMainWindow):
             with open(path, "w") as f:
                 f.write("\n".join(lines))
             self.panel_s3.set_export_status(
-                "Exported %d lines → %s" % (len(lines), Path(path).name))
-            self.status.showMessage("Exported → %s" % path, 5000)
+                f"Exported {len(lines)} lines → {Path(path).name}")
+            self.status.showMessage(f"Exported → {path}", 5000)
         except Exception as e:
             QMessageBox.critical(self, "Export Error", str(e))
 
@@ -356,7 +356,7 @@ class MainWindow(QMainWindow):
              self._stereo_right_north) = \
                 compute_stereo_offset(path, dir_v, north_v, offset)
         except Exception as e:
-            self.panel_s4.set_generate_status(False, "Error: %s" % e)
+            self.panel_s4.set_generate_status(False, f"Error: {e}")
             return
 
         self.viewport.set_stereo_path("left",  self._stereo_left_path)
@@ -365,8 +365,8 @@ class MainWindow(QMainWindow):
         has_rt = self._rt_path is not None
         self.panel_s4.set_source_label(has_rt)
         self.panel_s4.set_generate_status(
-            True, "✓  %d samples  ·  offset ±%.4f"
-            % (len(path), offset * 0.5))
+            True, f"✓  {len(path)} samples  ·  offset ±{offset * 0.5:.4f}"
+            )
         self._mark_dirty()
 
     def _export_stereo(self):
@@ -398,10 +398,10 @@ class MainWindow(QMainWindow):
             with open(left_path,  "w") as f: f.write("\n".join(left_lines))
             with open(right_path, "w") as f: f.write("\n".join(right_lines))
             self.panel_s4.set_export_status(
-                "Exported:\n%s\n%s" % (left_path.name, right_path.name))
+                f"Exported:\n{left_path.name}\n{right_path.name}")
             self.status.showMessage(
-                "Stereo exported → %s / %s"
-                % (left_path.name, right_path.name), 6000)
+                f"Stereo exported → {left_path.name} / {right_path.name}"
+            )
         except Exception as e:
             QMessageBox.critical(self, "Export Error", str(e))
 
@@ -433,9 +433,9 @@ class MainWindow(QMainWindow):
             self._curve_widget.update_curve(self._project.get("speed_profile", []))
             self._load_pointcloud(open_project=True)
             self._load_mesh(open_project=True)
-            self.status.showMessage("Opened %s" % path, 4000)
+            self.status.showMessage(f"Opened {path}", 4000)
         except Exception as e:
-            QMessageBox.critical(self, "Error", "Could not open file:\n%s" % e)
+            QMessageBox.critical(self, "Error", f"Could not open file:\n{e}")
 
     def _action_save(self):
         if self._project_path is None:
@@ -448,9 +448,9 @@ class MainWindow(QMainWindow):
             with open(self._project_path, "w") as f:
                 json.dump(self._project, f, indent=2)
             self._dirty = False
-            self.status.showMessage("Saved → %s" % self._project_path, 4000)
+            self.status.showMessage(f"Saved → {self._project_path}" , 4000)
         except Exception as e:
-            QMessageBox.critical(self, "Error", "Could not save:\n%s" % e)
+            QMessageBox.critical(self, "Error", f"Could not save:\n{e}")
 
     # ── Place mode
 
@@ -522,7 +522,7 @@ class MainWindow(QMainWindow):
     def _clear_all_points(self):
         layer = self._active_layer()
         r = QMessageBox.question(self, "Clear All",
-            "Remove all %s control points?" % layer,
+            f"Remove all {layer} control points?" ,
             QMessageBox.Yes | QMessageBox.No)
         if r != QMessageBox.Yes: return
         self._project[layer]["points"] = []
@@ -588,7 +588,7 @@ class MainWindow(QMainWindow):
                 self._project["path"]["points"],
                 res, sp["smoothness"], sp["closed"])
         except Exception as e:
-            self.panel_s2.set_generate_status(False, "Path error: %s" % e)
+            self.panel_s2.set_generate_status(False, f"Path error: {e}")
             return
         self.viewport.set_spline("path", self._spline_path)
 
@@ -609,7 +609,7 @@ class MainWindow(QMainWindow):
                 self.viewport.set_spline("direction", raw)
             except Exception as e:
                 self.panel_s2.set_generate_status(
-                    False, "Direction spline error: %s" % e)
+                    False, f"Direction spline error: {e}")
                 return
         else:
             try:
@@ -617,7 +617,7 @@ class MainWindow(QMainWindow):
                     self._spline_path, dir_cfg, res)
             except Exception as e:
                 self.panel_s2.set_generate_status(
-                    False, "Direction vector error: %s" % e)
+                    False, f"Direction vector error: {e}")
                 return
 
         # ── North ─────────────────────────────────────────────────────────────
@@ -635,7 +635,7 @@ class MainWindow(QMainWindow):
                 self.viewport.set_spline("north", raw)
             except Exception as e:
                 self.panel_s2.set_generate_status(
-                    False, "North spline error: %s" % e)
+                    False, f"North spline error: {e}")
                 return
         else:
             try:
@@ -643,7 +643,7 @@ class MainWindow(QMainWindow):
                     self._spline_path, north_cfg, res)
             except Exception as e:
                 self.panel_s2.set_generate_status(
-                    False, "North vector error: %s" % e)
+                    False, f"North vector error: {e}")
                 return
 
         # ── Update vector field visuals ───────────────────────────────────────
@@ -653,7 +653,7 @@ class MainWindow(QMainWindow):
                                        self._spline_north)
 
         self.panel_s2.set_generate_status(
-            True, "✓  %d samples  ·  path + dir + north ready" % res)
+            True, f"✓  {res} samples  ·  path + dir + north ready")
         self._mark_dirty()
 
     def _export_path(self):
@@ -672,8 +672,8 @@ class MainWindow(QMainWindow):
             with open(path, "w") as f:
                 f.write("\n".join(lines))
             self.panel_s2.set_export_status(
-                "Exported %d lines → %s" % (len(lines), Path(path).name))
-            self.status.showMessage("Exported → %s" % path, 5000)
+                f"Exported {len(lines)} lines → {Path(path).name}")
+            self.status.showMessage(f"Exported → {path}", 5000)
         except Exception as e:
             QMessageBox.critical(self, "Export Error", str(e))
 
@@ -696,10 +696,10 @@ class MainWindow(QMainWindow):
             name = Path(path).name
             self.panel_s1.set_mesh_label(name)
             
-            self.status.showMessage("Mesh loaded: %s" % name, 3000)
+            self.status.showMessage(f"Mesh loaded: {name}", 3000)
         else:
             QMessageBox.critical(self, "Mesh Error",
-                "Could not load mesh (is trimesh installed?):\n%s" % result)
+                f"Could not load mesh (is trimesh installed?):\n{result}")
 
     # ── Mesh
 
@@ -720,12 +720,12 @@ class MainWindow(QMainWindow):
             self.viewport.set_pointcloud(xyz, t)
             name = Path(path).name
             self.panel_s1.set_pointcloud_label(
-                "%s  (%s pts)" % (name, f"{len(xyz):,}"))
+                f"{name}  ({len(xyz):,})")
             self.status.showMessage(
-                "Point cloud loaded: %s — %s points" % (name, f"{len(xyz):,}"), 4000)
+                f"Point cloud loaded: {name} — {len(xyz):,} points", 4000)
         except Exception as e:
             QMessageBox.critical(self, "Point Cloud Error",
-                "Could not load point cloud:\n%s" % e)
+                f"Could not load point cloud:\n{e}")
 
     # ── Tab gating
 
@@ -809,14 +809,93 @@ class MainWindow(QMainWindow):
         fname  = self._project_path.name if self._project_path else "unsaved"
         dirty  = " ●" if self._dirty else ""
         self.status.showMessage(
-            "%s%s  ·  path: %d pts  ·  dir: %d pts  ·  north: %d pts  ·  "
+            f"{fname}{dirty}  ·  path: {n_path} pts  ·  dir: {n_dir} pts  ·  north: {n_nor} pts  ·  "
             "orbit: L-drag  pan: R-drag  zoom: scroll"
-            % (fname, dirty, n_path, n_dir, n_nor)
         )
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Escape:
-            self.toolbar.btn_place.setChecked(False)
+        key  = event.key()
+        mods = event.modifiers()
+
+        # ── File
+        if mods == Qt.ControlModifier:
+            if key == Qt.Key_S:
+                self._action_save()
+                return
+            if key == Qt.Key_O:
+                self._action_open()
+                return
+            if key == Qt.Key_N:
+                self._action_new()
+                return
+            if key == Qt.Key_Z:
+                # placeholder for undo
+                return
+
+        # ── Tabs
+        if key == Qt.Key_1: self.tabs.setCurrentIndex(0); return
+        if key == Qt.Key_2: self.tabs.setCurrentIndex(1); return
+        if key == Qt.Key_3: self.tabs.setCurrentIndex(2); return
+        if key == Qt.Key_4: self.tabs.setCurrentIndex(3); return
+
+        # ── Stage 1 shortcuts (only active on the Place tab)
+        if self.tabs.currentIndex() == self.TAB_PLACE:
+            if key == Qt.Key_A:
+                self._add_point_at_origin()
+                return
+            if key == Qt.Key_D or key == Qt.Key_Delete or key == Qt.Key_Backspace:
+                self._delete_selected_point()
+                return
+            # Cycle active layer with Tab
+            if key == Qt.Key_Tab and mods == Qt.ControlModifier:
+                current = self.panel_s1.layer_combo.currentIndex()
+                self.panel_s1.layer_combo.setCurrentIndex((current + 1) % 3)
+                return
+
+        # ── Stage 2
+        if self.tabs.currentIndex() == self.TAB_SPLINE:
+            if key == Qt.Key_G:
+                self._generate_splines()
+                return
+            if key == Qt.Key_E:
+                self._export_path()
+                return
+
+        # ── Stage 3
+        if self.tabs.currentIndex() == self.TAB_SPEED:
+            if key == Qt.Key_A:
+                self.panel_s3._add_segment()
+                return
+            if key == Qt.Key_D or key == Qt.Key_Delete or key == Qt.Key_Backspace:
+                self.panel_s3._delete_segment()
+                return
+            if key == Qt.Key_Return or key == Qt.Key_Enter:
+                self._apply_speed_profile()
+                return
+            if key == Qt.Key_E:
+                self._export_retimed()
+                return
+        
+        # ── Stage 4
+        if self.tabs.currentIndex() == self.TAB_STEREO:
+            if key == Qt.Key_G:
+                self._generate_stereo()
+                return
+            if key == Qt.Key_E:
+                self._export_stereo()
+                return
+
+        # ── Viewport camera presets (work on any tab with the viewport visible)
+        if self.tabs.currentIndex() != self.TAB_SPEED:
+            if key == Qt.Key_6:
+                self.viewport.set_view_preset("perspective"); return
+            if key == Qt.Key_7:
+                self.viewport.set_view_preset("top"); return
+            if key == Qt.Key_8 and mods == Qt.NoModifier:
+                self.viewport.set_view_preset("front"); return
+            if key == Qt.Key_9:
+                self.viewport.set_view_preset("side"); return
+
         super(MainWindow, self).keyPressEvent(event)
 
 

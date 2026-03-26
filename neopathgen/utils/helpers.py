@@ -43,7 +43,7 @@ def empty_project():
 # ══════════════════════════════════════════════════════════════════════════════
 
 def btn(label, style="", icon=""):
-    text = "%s  %s" % (icon, label) if icon else label
+    text = f"{icon}  {label}" if icon else label
     b = QPushButton(text)
     if style:
         b.setProperty("style", style)
@@ -57,7 +57,7 @@ def sec_label(text):
 def hdivider():
     f = QFrame()
     f.setFrameShape(QFrame.HLine)
-    f.setStyleSheet("color: %s; margin: 2px 0;" % C["panel_border"])
+    f.setStyleSheet(f"color: {C["panel_border"]}; margin: 2px 0;")
     return f
 
 def xyz_spinboxes(lo=-9999.0, hi=9999.0):
@@ -78,7 +78,7 @@ def xyz_row(label_text, lo=-9999.0, hi=9999.0):
     hl.setSpacing(3)
     lbl = QLabel(label_text)
     lbl.setFixedWidth(14)
-    lbl.setStyleSheet("color: %s; font-size: 10px;" % C["text_muted"])
+    lbl.setStyleSheet(f"color: {C["text_muted"]}; font-size: 10px;")
     sx, sy, sz = xyz_spinboxes(lo, hi)
     hl.addWidget(lbl)
     hl.addWidget(sx); hl.addWidget(sy); hl.addWidget(sz)

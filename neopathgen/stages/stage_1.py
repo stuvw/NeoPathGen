@@ -57,7 +57,7 @@ class Stage1Panel(QWidget):
         title.setObjectName("AppTitle")
         bl.addWidget(title)
         sub = QLabel("camera path generator")
-        sub.setStyleSheet("color: %s; font-size: 9px; letter-spacing: 2px;" % C["text_muted"])
+        sub.setStyleSheet(f"color: {C["text_muted"]}; font-size: 9px; letter-spacing: 2px;")
         bl.addWidget(sub)
         bl.addSpacing(10)
 
@@ -74,8 +74,8 @@ class Stage1Panel(QWidget):
         shl = QHBoxLayout(swatch_row)
         shl.setContentsMargins(0, 0, 0, 0); shl.setSpacing(8)
         for layer, col in [("PATH", C["col_path"]), ("DIR", C["col_direction"]), ("NORTH", C["col_north"])]:
-            sw = QLabel("■ %s" % layer)
-            sw.setStyleSheet("color: %s; font-size: 9px; letter-spacing: 1px;" % col)
+            sw = QLabel(f"■ {layer}")
+            sw.setStyleSheet(f"color: {col}; font-size: 9px; letter-spacing: 1px;")
             shl.addWidget(sw)
         shl.addStretch()
         bl.addWidget(swatch_row)
@@ -166,7 +166,7 @@ class Stage1Panel(QWidget):
             hl.setSpacing(5)
             lbl = QLabel(axis_label)
             lbl.setFixedWidth(12)
-            lbl.setStyleSheet("color: %s; font-size: 10px; font-weight: bold;" % C["text_muted"])
+            lbl.setStyleSheet(f"color: {C["text_muted"]}; font-size: 10px; font-weight: bold;")
             spin = QDoubleSpinBox()
             spin.setRange(-9999, 9999)
             spin.setSingleStep(0.1)
@@ -205,7 +205,7 @@ class Stage1Panel(QWidget):
         ml.addWidget(self.btn_load_mesh, 1); ml.addWidget(self.chk_mesh)
         bl.addWidget(mesh_row)
         self.lbl_mesh = QLabel("No mesh loaded")
-        self.lbl_mesh.setStyleSheet("color: %s; font-size: 9px;" % C["text_muted"])
+        self.lbl_mesh.setStyleSheet(f"color: {C["text_muted"]}; font-size: 9px;")
         bl.addWidget(self.lbl_mesh)
         bl.addStretch()
 
@@ -226,7 +226,7 @@ class Stage1Panel(QWidget):
         bl.addWidget(pc_row)
         self.lbl_pointcloud = QLabel("No point cloud loaded")
         self.lbl_pointcloud.setStyleSheet(
-            "color: %s; font-size: 9px;" % C["text_muted"])
+            f"color: {C["text_muted"]}; font-size: 9px;")
         bl.addWidget(self.lbl_pointcloud)
         
 
@@ -332,7 +332,7 @@ class Stage1Panel(QWidget):
         self.point_list.blockSignals(True)
         self.point_list.clear()
         for i, p in enumerate(pts):
-            item = QListWidgetItem("  %02d   %8.3f  %8.3f  %8.3f" % (i, p[0], p[1], p[2]))
+            item = QListWidgetItem(f"  {i:02d}   {p[0]:8.3f}  {p[1]:8.3f}  {p[2]:8.3f}")
             item.setForeground(QColor(C["text"]))
             self.point_list.addItem(item)
         if 0 <= selected_idx < len(pts):

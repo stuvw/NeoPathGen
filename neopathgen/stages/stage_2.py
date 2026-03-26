@@ -58,7 +58,7 @@ class Stage2Panel(QWidget):
         title.setObjectName("AppTitle")
         bl.addWidget(title)
         sub = QLabel("spline generation")
-        sub.setStyleSheet("color: %s; font-size: 9px; letter-spacing: 2px;" % C["text_muted"])
+        sub.setStyleSheet(f"color: {C["text_muted"]}; font-size: 9px; letter-spacing: 2px;")
         bl.addWidget(sub)
         bl.addSpacing(10)
 
@@ -86,9 +86,9 @@ class Stage2Panel(QWidget):
         for layer, col in [("path",      C["col_path"]),
                             ("direction", C["col_direction"]),
                             ("north",     C["col_north"])]:
-            lbl = QLabel("■  %s" % layer.upper())
-            lbl.setStyleSheet("color: %s; font-size: 9px; font-weight: bold;"
-                              " letter-spacing: 2px; padding-top: 6px;" % col)
+            lbl = QLabel(f"■  {layer.upper()}")
+            lbl.setStyleSheet(f"color: {col}; font-size: 9px; font-weight: bold;"
+                              " letter-spacing: 2px; padding-top: 6px;")
             bl.addWidget(lbl)
             bl.addWidget(hdivider())
 
@@ -143,7 +143,7 @@ class Stage2Panel(QWidget):
         ]:
             chk = QCheckBox(label)
             chk.setChecked(True)
-            chk.setStyleSheet("color: %s;" % col)
+            chk.setStyleSheet(f"color: {col};")
             bl.addWidget(chk)
             self.chk_show_spline[layer] = chk
         bl.addSpacing(8)
@@ -156,7 +156,7 @@ class Stage2Panel(QWidget):
         self.lbl_dir_info   = QLabel("DIRECTION – mode: tangent")
         self.lbl_north_info = QLabel("NORTH     – mode: fixed Z")
         for lbl in (self.lbl_path_info, self.lbl_dir_info, self.lbl_north_info):
-            lbl.setStyleSheet("color: %s; font-size: 10px;" % C["text_dim"])
+            lbl.setStyleSheet(f"color: {C["text_dim"]}; font-size: 10px;")
             lbl.setWordWrap(True)
             bl.addWidget(lbl)
         bl.addSpacing(8)
@@ -170,7 +170,7 @@ class Stage2Panel(QWidget):
         bl.addWidget(self.btn_generate)
 
         self.lbl_status = QLabel("No spline generated")
-        self.lbl_status.setStyleSheet("color: %s; font-size: 10px;" % C["text_muted"])
+        self.lbl_status.setStyleSheet(f"color: {C["text_muted"]}; font-size: 10px;")
         self.lbl_status.setWordWrap(True)
         bl.addWidget(self.lbl_status)
         bl.addSpacing(8)
@@ -185,7 +185,7 @@ class Stage2Panel(QWidget):
         bl.addWidget(self.btn_export)
 
         self.lbl_export = QLabel("Generate a spline first.")
-        self.lbl_export.setStyleSheet("color: %s; font-size: 10px;" % C["text_muted"])
+        self.lbl_export.setStyleSheet(f"color: {C["text_muted"]}; font-size: 10px;")
         self.lbl_export.setWordWrap(True)
         bl.addWidget(self.lbl_export)
         bl.addStretch()
@@ -206,19 +206,19 @@ class Stage2Panel(QWidget):
 
     def set_generate_status(self, ok, message):
         color = C["success"] if ok else C["danger"]
-        self.lbl_status.setStyleSheet("color: %s; font-size: 10px;" % color)
+        self.lbl_status.setStyleSheet(f"color: {color}; font-size: 10px;")
         self.lbl_status.setText(message)
         self.btn_export.setEnabled(ok)
         if ok:
             self.lbl_export.setText("Ready to export.")
-            self.lbl_export.setStyleSheet("color: %s; font-size: 10px;" % C["text_dim"])
+            self.lbl_export.setStyleSheet(f"color: {C["text_dim"]}; font-size: 10px;")
         else:
             self.lbl_export.setText("Generate a spline first.")
-            self.lbl_export.setStyleSheet("color: %s; font-size: 10px;" % C["text_muted"])
+            self.lbl_export.setStyleSheet(f"color: {C["text_muted"]}; font-size: 10px;")
 
     def set_export_status(self, message):
         self.lbl_export.setText(message)
-        self.lbl_export.setStyleSheet("color: %s; font-size: 10px;" % C["success"])
+        self.lbl_export.setStyleSheet(f"color: {C["success"]}; font-size: 10px;")
 
     def refresh_layer_info(self, project):
         n_path = len(project["path"]["points"])
@@ -227,11 +227,11 @@ class Stage2Panel(QWidget):
         n_mode = project["north"]["mode"]
         n_nor  = len(project["north"]["points"])
 
-        self.lbl_path_info.setText("PATH      – %d pts" % n_path)
-        dir_detail = (" (%d ctrl pts)" % n_dir) if d_mode == "spline" else ""
-        self.lbl_dir_info.setText("DIRECTION – %s%s" % (d_mode, dir_detail))
-        nor_detail = (" (%d ctrl pts)" % n_nor) if n_mode == "spline" else ""
-        self.lbl_north_info.setText("NORTH     – %s%s" % (n_mode, nor_detail))
+        self.lbl_path_info.setText(f"PATH      – {n_path} pts")
+        dir_detail = (f" ({n_dir} ctrl pts)") if d_mode == "spline" else ""
+        self.lbl_dir_info.setText(f"DIRECTION – {d_mode}{dir_detail}")
+        nor_detail = (f" ({n_nor} ctrl pts)") if n_mode == "spline" else ""
+        self.lbl_north_info.setText(f"NORTH     – {n_mode}{nor_detail}")
 
     def load_from_project(self, proj):
         sp = proj["spline"]

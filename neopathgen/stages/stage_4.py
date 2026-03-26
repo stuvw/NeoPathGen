@@ -53,8 +53,7 @@ class Stage4Panel(QWidget):
         title.setObjectName("AppTitle")
         bl.addWidget(title)
         sub = QLabel("stereo offset")
-        sub.setStyleSheet("color: %s; font-size: 9px; letter-spacing: 2px;"
-                          % C["text_muted"])
+        sub.setStyleSheet(f"color: {C["text_muted"]}; font-size: 9px; letter-spacing: 2px;")
         bl.addWidget(sub)
         bl.addSpacing(10)
 
@@ -63,7 +62,7 @@ class Stage4Panel(QWidget):
             "Generates two paths offset laterally by ±½ of the distance "
             "below.\n\nLateral = normalize(direction × north)\n"
             "Direction and north are identical for both eyes.")
-        info.setStyleSheet("color: %s; font-size: 10px;" % C["text_dim"])
+        info.setStyleSheet(f"color: {C["text_dim"]}; font-size: 10px;")
         info.setWordWrap(True)
         bl.addWidget(info)
         bl.addSpacing(8)
@@ -93,7 +92,7 @@ class Stage4Panel(QWidget):
 
         self.lbl_source = QLabel("Will use Stage 2 uniform splines.")
         self.lbl_source.setStyleSheet(
-            "color: %s; font-size: 10px;" % C["text_dim"])
+            f"color: {C["text_dim"]}; font-size: 10px;")
         self.lbl_source.setWordWrap(True)
         bl.addWidget(self.lbl_source)
         bl.addSpacing(8)
@@ -108,7 +107,7 @@ class Stage4Panel(QWidget):
 
         self.lbl_status = QLabel("No offset generated.")
         self.lbl_status.setStyleSheet(
-            "color: %s; font-size: 10px;" % C["text_muted"])
+            f"color: {C["text_muted"]}; font-size: 10px;")
         self.lbl_status.setWordWrap(True)
         bl.addWidget(self.lbl_status)
         bl.addSpacing(8)
@@ -122,9 +121,9 @@ class Stage4Panel(QWidget):
         self.chk_show_left.setChecked(True)
         self.chk_show_right.setChecked(True)
         self.chk_show_left.setStyleSheet(
-            "color: %s;" % C["col_direction"])
+            f"color: {C["col_direction"]};")
         self.chk_show_right.setStyleSheet(
-            "color: %s;" % C["col_north"])
+            f"color: {C["col_north"]};")
         bl.addWidget(self.chk_show_left)
         bl.addWidget(self.chk_show_right)
         bl.addSpacing(8)
@@ -140,7 +139,7 @@ class Stage4Panel(QWidget):
 
         self.lbl_export = QLabel("Generate offset paths first.")
         self.lbl_export.setStyleSheet(
-            "color: %s; font-size: 10px;" % C["text_muted"])
+            f"color: {C["text_muted"]}; font-size: 10px;")
         self.lbl_export.setWordWrap(True)
         bl.addWidget(self.lbl_export)
         bl.addStretch()
@@ -158,32 +157,32 @@ class Stage4Panel(QWidget):
         if has_retimed:
             self.lbl_source.setText("✓  Using Stage 3 re-timed arrays.")
             self.lbl_source.setStyleSheet(
-                "color: %s; font-size: 10px;" % C["success"])
+                f"color: {C["success"]}; font-size: 10px;")
         else:
             self.lbl_source.setText(
                 "Using Stage 2 uniform splines\n"
                 "(run Stage 3 first to use re-timed data).")
             self.lbl_source.setStyleSheet(
-                "color: %s; font-size: 10px;" % C["text_dim"])
+                f"color: {C["text_dim"]}; font-size: 10px;")
 
     def set_generate_status(self, ok, message):
         color = C["success"] if ok else C["danger"]
-        self.lbl_status.setStyleSheet("color: %s; font-size: 10px;" % color)
+        self.lbl_status.setStyleSheet(f"color: {color}; font-size: 10px;")
         self.lbl_status.setText(message)
         self.btn_export.setEnabled(ok)
         if ok:
             self.lbl_export.setText("Ready — choose a base filename.")
             self.lbl_export.setStyleSheet(
-                "color: %s; font-size: 10px;" % C["text_dim"])
+                f"color: {C["text_dim"]}; font-size: 10px;")
         else:
             self.lbl_export.setText("Generate offset paths first.")
             self.lbl_export.setStyleSheet(
-                "color: %s; font-size: 10px;" % C["text_muted"])
+                f"color: {C["text_muted"]}; font-size: 10px;")
 
     def set_export_status(self, message):
         self.lbl_export.setText(message)
         self.lbl_export.setStyleSheet(
-            "color: %s; font-size: 10px;" % C["success"])
+            f"color: {C["success"]}; font-size: 10px;")
 
     def load_from_project(self, proj):
         self.spin_offset.blockSignals(True)
@@ -196,12 +195,12 @@ def _placeholder_panel(title, subtitle=""):
     l = QVBoxLayout(w)
     l.setAlignment(Qt.AlignCenter)
     t = QLabel(title)
-    t.setStyleSheet("color: %s; font-size: 12px; letter-spacing: 3px;" % C["text_muted"])
+    t.setStyleSheet(f"color: {C["text_muted"]}; font-size: 12px; letter-spacing: 3px;")
     t.setAlignment(Qt.AlignCenter)
     l.addWidget(t)
     if subtitle:
         s = QLabel(subtitle)
-        s.setStyleSheet("color: %s; font-size: 10px;" % C["text_muted"])
+        s.setStyleSheet(f"color: {C["text_muted"]}; font-size: 10px;")
         s.setAlignment(Qt.AlignCenter)
         l.addWidget(s)
     return w

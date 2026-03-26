@@ -80,7 +80,7 @@ def compute_direction_vectors(path_pts, direction_cfg, resolution):
         v = v / n if n > 1e-12 else np.array([0.0, 1.0, 0.0])
         return np.tile(v, (resolution, 1))
 
-    raise ValueError("Unknown direction mode: %s" % mode)
+    raise ValueError(f"Unknown direction mode: {mode}")
 
 
 def compute_north_vectors(path_pts, north_cfg, resolution):
@@ -119,7 +119,7 @@ def compute_north_vectors(path_pts, north_cfg, resolution):
         norms  = np.where(norms < 1e-12, 1.0, norms)
         return up / norms
 
-    raise ValueError("Unknown north mode: %s" % mode)
+    raise ValueError(f"Unknown north mode: {mode}")
 
 
 def build_export_lines(path_pts, dir_vecs, north_vecs):
@@ -128,6 +128,5 @@ def build_export_lines(path_pts, dir_vecs, north_vecs):
     """
     lines = []
     for p, c, n in zip(path_pts, dir_vecs, north_vecs):
-        lines.append("%.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f"
-                     % (p[0], p[1], p[2], c[0], c[1], c[2], n[0], n[1], n[2]))
+        lines.append(f"{p[0]:.6f} {p[1]:.6f} {p[2]:.6f} {c[0]:.6f} {c[1]:.6f} {c[2]:.6f} {n[0]:.6f} {n[1]:.6f} {n[2]:.6f}")
     return lines
