@@ -59,7 +59,7 @@ The application is organised into four sequential stages, accessible via the tab
 ### Stage 1 — Point Placement
 
 <p align="center">
-  <img src="./examples/images/stage_1.png" alt="stage 1 example" style="width: 50%; margin: auto"/>
+  <img src="./examples/images/stage_1.png" alt="stage 1 example" style="width: 70%; margin: auto"/>
 </p>
 
 Place and edit the control points that define your splines.
@@ -109,7 +109,7 @@ Preset views (PERSP / TOP / FRONT / SIDE) are available in the toolbar.
 ### Stage 2 — Spline Generation
 
 <p align="center">
-  <img src="./examples/images/stage_2.png" alt="stage 2 example" style="width: 50%; margin: auto"/>
+  <img src="./examples/images/stage_2.png" alt="stage 2 example" style="width: 70%; margin: auto"/>
 </p>
 
 Fits B-splines through the control points using `scipy.interpolate.splprep` and previews the result in the 3D viewport.
@@ -139,7 +139,7 @@ No header. All values are space-separated 6-decimal floats. `c` is the unit dire
 ### Stage 3 — Speed Profile (optional)
 
 <p align="center">
-  <img src="./examples/images/stage_3_graph.png" alt="stage 3 graph example" style="width: 50%; margin: auto"/>
+  <img src="./examples/images/stage_3_graph.png" alt="stage 3 graph example" style="width: 70%; margin: auto"/>
 </p>
 
 Re-times the path so that samples are non-uniformly distributed along the curve parameter, allowing sections to feel slower or faster in the renderer.
@@ -163,8 +163,9 @@ The **speed curve widget** shows the resolved `m(u)` function live as you edit t
 A dot-cloud visualisation in the 3D viewport shows the re-timed sample instantaneous speed: red -> faster, yellow -> slower. 
 
 <p align="center">
-  <img src="./examples/images/stage_3_spline.png" alt="stage 3 spline example" style="width: 50%; margin: auto"/>
+  <img src="./examples/images/stage_3_spline.png" alt="stage 3 spline example" style="width: 70%; margin: auto"/>
 </p>
+
 **Export (Stage 3)**
 
 Same format as Stage 2, but samples are non-uniformly spaced along `u`. The file is written as `path_retimed.txt` by default.
@@ -174,7 +175,7 @@ Same format as Stage 2, but samples are non-uniformly spaced along `u`. The file
 ### Stage 4 — Stereo Offset (optional)
 
 <p align="center">
-  <img src="./examples/images/stage_4.png" alt="stage 4 example" style="width: 50%; margin: auto"/>
+  <img src="./examples/images/stage_4.png" alt="stage 4 example" style="width: 70%; margin: auto"/>
 </p>
 
 Generates a left/right camera pair offset laterally from the main path.
