@@ -417,6 +417,11 @@ class MainWindow(QMainWindow):
         self._full_refresh()
 
     def _action_open(self):
+        if self._dirty:
+            r = QMessageBox.question(self, "Open Project",
+                "Discard unsaved changes?", QMessageBox.Yes | QMessageBox.No)
+            if r != QMessageBox.Yes:
+                return
         path, _ = QFileDialog.getOpenFileName(
             self, "Open Project", "", "NeoPathGen JSON (*.npj *.json)")
         if not path: return
@@ -810,7 +815,7 @@ class MainWindow(QMainWindow):
         dirty  = " ●" if self._dirty else ""
         self.status.showMessage(
             f"{fname}{dirty}  ·  path: {n_path} pts  ·  dir: {n_dir} pts  ·  north: {n_nor} pts  ·  "
-            "orbit: L-drag  pan: R-drag  zoom: scroll"
+            "orbit: LMB   zoom: RMB/scroll    move center: SHIFT + LMB   change FOV: SHIFT + RMB"
         )
 
     def keyPressEvent(self, event):
@@ -839,21 +844,28 @@ class MainWindow(QMainWindow):
         if key == Qt.Key_4: self.tabs.setCurrentIndex(3); return
 
         # ── Stage 1 shortcuts (only active on the Place tab)
-        if self.tabs.currentIndex() == self.TAB_PLACE:
+        if self.tabs.currentIndex() == self.TAB_PLACE and mods == Qt.ControlModifier:
             if key == Qt.Key_A:
                 self._add_point_at_origin()
                 return
-            if key == Qt.Key_D or key == Qt.Key_Delete or key == Qt.Key_Backspace:
+            if key == Qt.Key_D:
                 self._delete_selected_point()
                 return
-            # Cycle active layer with Tab
-            if key == Qt.Key_Tab and mods == Qt.ControlModifier:
+            if key == Qt.Key_R:
+                self._generate_splines()
+                self._apply_speed_profile()
+                self._generate_stereo()
+                return
+            if key == Qt.Key_Tab:
                 current = self.panel_s1.layer_combo.currentIndex()
                 self.panel_s1.layer_combo.setCurrentIndex((current + 1) % 3)
                 return
+            if key == Qt.Key_P:
+                self.toolbar.btn_place.toggle()
+                return
 
         # ── Stage 2
-        if self.tabs.currentIndex() == self.TAB_SPLINE:
+        if self.tabs.currentIndex() == self.TAB_SPLINE and mods == Qt.ControlModifier:
             if key == Qt.Key_G:
                 self._generate_splines()
                 return
@@ -862,14 +874,14 @@ class MainWindow(QMainWindow):
                 return
 
         # ── Stage 3
-        if self.tabs.currentIndex() == self.TAB_SPEED:
+        if self.tabs.currentIndex() == self.TAB_SPEED and mods == Qt.ControlModifier:
             if key == Qt.Key_A:
                 self.panel_s3._add_segment()
                 return
-            if key == Qt.Key_D or key == Qt.Key_Delete or key == Qt.Key_Backspace:
+            if key == Qt.Key_D:
                 self.panel_s3._delete_segment()
                 return
-            if key == Qt.Key_Return or key == Qt.Key_Enter:
+            if key == Qt.Key_G:
                 self._apply_speed_profile()
                 return
             if key == Qt.Key_E:
@@ -877,7 +889,7 @@ class MainWindow(QMainWindow):
                 return
         
         # ── Stage 4
-        if self.tabs.currentIndex() == self.TAB_STEREO:
+        if self.tabs.currentIndex() == self.TAB_STEREO and mods == Qt.ControlModifier:
             if key == Qt.Key_G:
                 self._generate_stereo()
                 return

@@ -374,27 +374,11 @@ class Viewport3D(QWidget):
             self.point_placed.emit(self._active_layer, float(pos[0]), float(pos[1]))
 
     def _ray_z0(self, screen_pos):
-        """
-        Unproject a screen pixel to world-space (x, y) on the Z=0 plane.
-
-        Vispy's TurntableCamera exposes `transform` which maps from the
-        camera's clip/NDC space to scene space.  We instead use the cleaner
-        path: ask the scene's node_transform from the *canvas* node down to
-        the *view.scene* node, which gives us a full canvas-pixel → world
-        transform, then sample it at two different Z depths to build a ray.
-
-        The key insight is that we must pass *canvas* coordinates (pixels),
-        not NDC.  Vispy handles the viewport/projection internally.
-        """
         try:
             sx, sy = float(screen_pos[0]), float(screen_pos[1])
+            tr = self.canvas.scene.node_transform(self.view.scene)
 
-            # node_transform(B, A) gives the transform that maps A → B.
-            # We want canvas-pixel space → scene (world) space.
-            tr = self.view.scene.node_transform(self.canvas.scene)
-
-            # Sample two depths along the ray.  In Vispy's canvas→scene
-            # transform, Z=0 is the near plane and Z=1 is the far plane.
+            # Sample two depths along the ray
             p0 = tr.map([sx, sy, 0.0, 1.0])
             p1 = tr.map([sx, sy, 1.0, 1.0])
 
@@ -405,7 +389,7 @@ class Viewport3D(QWidget):
             # Ray–plane intersection at Z = 0
             dz = p1[2] - p0[2]
             if abs(dz) < 1e-9:
-                return None      # ray is parallel to the ground plane
+                return None
             t  = -p0[2] / dz
             xw = p0[0] + t * (p1[0] - p0[0])
             yw = p0[1] + t * (p1[1] - p0[1])

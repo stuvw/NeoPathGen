@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
     QPushButton, QFrame, QLabel, QWidget, 
     QDoubleSpinBox, QHBoxLayout
 )
-from neopathgen.palette import *
+from neopathgen.palette import C
 
 def empty_project():
     return {

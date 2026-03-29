@@ -15,12 +15,13 @@ NeoPathGen is a desktop tool for designing, previewing, and exporting camera pat
 | SciPy | 1.10+ |
 | Trimesh | 4.0+ |
 
+**Clone github repo:**
+
+`git clone git@github.com:stuvw/NeoPathGen.git`
+
 **Create a Python virtual environment:**
 
-|   Platform  |              Command           |
-| ----------- | ------------------------------ |
-| Linux/Macos | `$ python3 -m venv ./.venv`    |
-| Windows     | `C:\> python3 -m venv .\.venv` |
+`cd NeoPathGen`
 
 **Activate the Python virtual environment:**
 
@@ -57,6 +58,8 @@ The application is organised into four sequential stages, accessible via the tab
 
 ### Stage 1 — Point Placement
 
+<img src="./examples/images/stage_1.png" alt="stage 1 example" style="width: 50%; margin: auto"/>
+
 Place and edit the control points that define your splines.
 
 **Active layer selector** switches between three independent point clouds:
@@ -68,8 +71,7 @@ Place and edit the control points that define your splines.
 **Adding points**
 
 - Click the **Add** button to insert a point offset from the last one, then adjust its position using the X / Y / Z spinboxes and sliders in the panel.
-> - Toggle **PLACE POINT** in the toolbar to enter click-to-place mode, which snaps new points to the ground plane (Z = 0). Press **Escape** to exit. \
-> **Currently WIP, is broken**
+- Toggle **PLACE POINT** in the toolbar to enter click-to-place mode, which snaps new points to the ground plane (Z = 0).
 
 **Direction modes**
 
@@ -88,15 +90,23 @@ Place and edit the control points that define your splines.
 | Spline | Up vector interpolated through a separate set of control points |
 | Fixed point | Up vector points toward a fixed world-space coordinate |
 
-**Reference mesh**
+**Reference mesh / pointcloud**
 
-Load an OBJ, PLY, or STL file as a dim wireframe overlay to help position points relative to scene geometry. Visibility can be toggled freely.
+Load an OBJ, PLY, or STL file as a dim wireframe overlay or a binary file with four 32 bit floats per point (x, z, y, "mass") to help position points relative to scene geometry. Visibility can be toggled freely for both.
 
-**Viewport navigation** — left-drag to orbit, scroll to zoom. Preset views (PERSP / TOP / FRONT / SIDE) are available in the toolbar.
+**Viewport navigation** :
+- LMB + drag to orbit
+- RMB + drag / scroll to zoom
+- Shift + LMB + drag to shift camera center point
+- Shift + RMB + drag to change camera FOV.
+
+Preset views (PERSP / TOP / FRONT / SIDE) are available in the toolbar.
 
 ---
 
 ### Stage 2 — Spline Generation
+
+<img src="./examples/images/stage_2.png" alt="stage 2 example" style="width: 50%; margin: auto"/>
 
 Fits B-splines through the control points using `scipy.interpolate.splprep` and previews the result in the 3D viewport.
 
@@ -124,6 +134,8 @@ No header. All values are space-separated 6-decimal floats. `c` is the unit dire
 
 ### Stage 3 — Speed Profile (optional)
 
+<img src="./examples/images/stage_3_graph.png" alt="stage 3 graph example" style="width: 50%; margin: auto"/>
+
 Re-times the path so that samples are non-uniformly distributed along the curve parameter, allowing sections to feel slower or faster in the renderer.
 
 **Speed segments**
@@ -142,7 +154,9 @@ Segments do not need to cover the full `[0, 1]` range. Gaps are smoothly bridged
 
 The **speed curve widget** shows the resolved `m(u)` function live as you edit the table, including smoothstep transitions.
 
-A dot-cloud visualisation in the 3D viewport shows the re-timed sample density: clustered dots indicate slow regions, sparse dots indicate fast regions.
+A dot-cloud visualisation in the 3D viewport shows the re-timed sample instantaneous speed: red -> faster, yellow -> slower. 
+
+<img src="./examples/images/stage_3_spline.png" alt="stage 3 spline example" style="width: 50%; margin: auto"/>
 
 **Export (Stage 3)**
 
@@ -151,6 +165,8 @@ Same format as Stage 2, but samples are non-uniformly spaced along `u`. The file
 ---
 
 ### Stage 4 — Stereo Offset (optional)
+
+<img src="./examples/images/stage_4.png" alt="stage 4 example" style="width: 50%; margin: auto"/>
 
 Generates a left/right camera pair offset laterally from the main path.
 
@@ -233,36 +249,38 @@ Spline samples and computed vectors are not saved — they are recomputed on dem
 | 3 | Switch to tab 3 ( speed profile ) |
 | 4 | Switch to tab 4 ( stereo offset ) |
 
-### Stage 1 tab
+### Stage 1 - point placing
 
 | Key | Action |
 |-----|--------|
-| A | place a point |
-| D / Backspace / Delete | delete selected point |
-| Ctrl + Tab | cycle between editing modes (path/direction/north) |
+| Ctrl + A | Add a point |
+| Ctrl + D  | Delete selected point |
+| Ctrl + R  | Reload and regenerate all splines, speed profile and stereo offset |
+| Ctrl + Tab | Cycle between editing modes (path/direction/north) |
+| Ctrl + P | Toggle click-to-place mode |
 
-### Stage 2 tab
-
-| Key | Action |
-|-----|--------|
-| G | generate splines |
-| E | export path |
-
-### Stage 3 tab
+### Stage 2 -  spline generation
 
 | Key | Action |
 |-----|--------|
-| A | add speed segment |
-| D / Delete / Backspace | delete selected speed segment |
-| Return / Enter | apply speed profile to splines |
-| E | export retimed path |
+| Ctrl + G | Generate splines |
+| Ctrl + E | Export path |
 
-### Stage 4 tab
+### Stage 3 - speed profile
 
 | Key | Action |
 |-----|--------|
-| G | generate stereo offset |
-| E | export left/right paths |
+| Ctrl + A | Add speed segment |
+| Ctrl + D | Delete selected speed segment |
+| Ctrl + G | Generate and apply speed profile to splines |
+| Ctrl + E | Export retimed path |
+
+### Stage 4 - stereo offset
+
+| Key | Action |
+|-----|--------|
+| Ctrl + G | Generate stereo offset |
+| Ctrl + E | Export left/right paths |
 
 
 ---
@@ -277,4 +295,4 @@ Spline samples and computed vectors are not saved — they are recomputed on dem
 ## Issues / Improvements
 
 - This project was mostly vibe-coded, so **there will inevitably be bugs**. In case you find one, please submit an [issue](https://github.com/stuvw/NeoPathGen/issues), while detailing as much as possible. Or even better, create a [pull request](https://github.com/stuvw/NeoPathGen/pulls) with the fix !
-- If you have any improvement ideas, don't hesitate to create a pull request/submit an issue like detailed above.
+- If you have any improvement ideas, don't hesitate to create a pull request/submit an issue like mentioned previously.
