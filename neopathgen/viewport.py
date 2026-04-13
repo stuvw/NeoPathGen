@@ -51,6 +51,9 @@ class Viewport3D(QWidget):
                 gc[i] = gc[i+1] = [0.18, 0.18, 0.30, 0.9]
         self.grid_vis = visuals.Line(pos=gv, color=gc,
                                      connect="segments", parent=self.scene)
+        # Don't write to the depth buffer: the grid is a reference overlay and
+        # must not occlude the point cloud when the camera crosses z=0.
+        self.grid_vis.set_gl_state(depth_test=True, depth_mask=False)
 
         # Axis
         L = 2.5
@@ -61,6 +64,7 @@ class Viewport3D(QWidget):
                          [.30,.55,1.0,1],[.30,.55,1.0,1]], dtype=np.float32)
         self.axis_vis = visuals.Line(pos=ax_v, color=ax_c, connect="segments",
                                      width=2, parent=self.scene)
+        self.axis_vis.set_gl_state(depth_test=True, depth_mask=False)
 
         # Per-layer visuals
         self._cp_vis   = {}
