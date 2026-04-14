@@ -319,6 +319,17 @@ class Stage3Panel(QWidget):
         self.table.blockSignals(True)
         if col in (0, 1):   # start / end: clamp to [0, 1]
             v = max(0.0, min(1.0, v))
+            # prevent users from setting the start point after the end point (and vice-versa)
+            if col == 0:
+                start_val = v
+                end_val = self._cell_value(row, 1)
+                if start_val > end_val:
+                    v = end_val
+            if col == 1:
+                start_val = self._cell_value(row, 0)
+                end_val = v
+                if start_val > end_val:
+                    v = start_val
         elif col == 2:       # speed: clamp to (0, ∞)
             v = max(0.001, v)
         item.setText("%.3f" % v)

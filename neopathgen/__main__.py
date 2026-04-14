@@ -462,7 +462,7 @@ class MainWindow(QMainWindow):
     def _on_place_toggled(self, checked):
         self.viewport.set_place_mode(checked)
         self.status.showMessage(
-            "Click on the grid to place a point  ·  ESC to exit place mode"
+            "Click on the grid to place a point"
             if checked else "Place mode off", 3000)
 
     def _on_point_placed(self, layer, x, y):

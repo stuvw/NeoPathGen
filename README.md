@@ -17,11 +17,21 @@ NeoPathGen is a desktop tool for designing, previewing, and exporting camera pat
 
 **Clone github repo:**
 
-`git clone git@github.com:stuvw/NeoPathGen.git`
+```bash
+git clone https://github.com/stuvw/NeoPathGen.git
+```
+**Change directory into repo:**
+
+```bash
+cd RenderPath
+```
 
 **Create a Python virtual environment:**
 
-`cd NeoPathGen`
+|   Platform  |              Command           |
+| ----------- | ------------------------------ |
+| Linux/Macos | `$ python3 -m venv ./.venv`    |
+| Windows     | `C:\> python3 -m venv .\.venv` |
 
 **Activate the Python virtual environment:**
 
